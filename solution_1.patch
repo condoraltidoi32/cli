@@ -1,0 +1,19 @@
+diff --git a/cli/api/auth.go b/cli/api/auth.go
+--- a/cli/api/auth.go
++++ b/cli/api/auth.go
+@@ -55,10 +55,16 @@ func (c *Client) GetToken(host string) (string, error) {
+ 	if err != nil {
+ 		if errors.Is(err, keyring.ErrNotFound) {
+ 			return "", ErrNoTokenFound
++		} else if errors.Is(err, keyring.ErrAccessDenied) ||
++			errors.Is(err, keyring.ErrDBusDisconnected) ||
++			errors.Is(err, keyring.ErrKeychainLocked) {
++			return "", ErrKeyringAccessFailed
++		}
+ 		return "", fmt.Errorf("failed to retrieve token: %w", err)
+ 	}
+ 	return token, nil
+ }
++
++var ErrKeyringAccessFailed = errors.New("keyring access failed")
++var ErrNoTokenFound = errors.New("no token found")
