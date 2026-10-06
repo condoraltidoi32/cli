@@ -1,0 +1,15 @@
+diff --git a/cli/auth/credentials.go b/cli/auth/credentials.go
+--- a/cli/auth/credentials.go
++++ b/cli/auth/credentials.go
+@@ -120,7 +120,11 @@ func (c *Credentials) resolveToken(host string) (string, error) {
+         c.logger.Debug("Failed to retrieve token from keyring: %v", err)
+         return "", err
+     }
+-    return token, nil
++
++    if err != nil && !errors.Is(err, ErrNotFound) {
++        c.logger.Error("Failed to retrieve token from keyring: %v", err)
++        return "", err
++    }
+     return token, nil
+ }
