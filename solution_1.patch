@@ -1,0 +1,18 @@
+diff --git a/cli/app/auth/keyring.go b/cli/app/auth/keyring.go
+index 5b9a3c7..28e9d02 100644
+--- a/cli/app/auth/keyring.go
++++ b/cli/app/auth/keyring.go
+@@ -45,7 +45,10 @@ func (k *Keyring) getToken(hostname string) (string, error) {
+         return "", ErrNotFound
+     }
+ 
+-    return token, nil
++    return token, k.checkKeyringError(err)
++}
++
++func (k *Keyring) checkKeyringError(err error) error {
++    if errors.Is(err, keyring.ErrNoSuchKey) {
++        return ErrNotFound
++    }
++    return err
+ }
