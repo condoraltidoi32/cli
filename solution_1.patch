@@ -1,0 +1,20 @@
+diff --git a/cli/go/commands/api.go b/cli/go/commands/api.go
+index 4e5b2c3..f456a78 100644
+--- a/cli/go/commands/api.go
++++ b/cli/go/commands/api.go
+@@ -120,6 +120,14 @@ func (c *apiCommand) Execute(_ *cli.Context) error {
+ 
+         // Fetch credentials
+         token, err := c.keyring.GetToken(host)
++        if err != nil {
++            // Check if the error is due to an operational keyring failure
++            if errors.Is(err, keyring.ErrLocked) || errors.Is(err, keyring.ErrDisconnected) || errors.Is(err, keyring.ErrAccessDenied) {
++                return errors.New("failed to retrieve credentials: " + err.Error())
++            }
++            // Handle other errors
++            return errors.Wrap(err, "failed to retrieve credentials")
++        }
++
+         if token == "" {
+             return errors.New("no credentials found for the specified host")
+         }
