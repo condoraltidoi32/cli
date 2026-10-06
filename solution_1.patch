@@ -1,0 +1,20 @@
+diff --git a/cli/commands/api.go b/cli/commands/api.go
+index 9a0b1c2..3d4e5f6 100644
+--- a/cli/commands/api.go
++++ b/cli/commands/api.go
+@@ -120,6 +120,14 @@ func (apiCommand *APICommand) Run(args []string) int {
+         }
+     }
+ 
++    if err != nil {
++        switch {
++        case errors.Is(err, ErrNotFound):
++            log.Warn("no authentication token found, falling back to unauthenticated request")
++        default:
++            log.Error("failed to retrieve authentication token: %v", err)
++            return 1
++        }
++    }
+     // Proceed with API request
+     return 0
+ }
