@@ -1,0 +1,17 @@
+diff --git a/cli/commands/api.go b/cli/commands/api.go
+index 8f7a9e5..3b4d7ec 100644
+--- a/cli/commands/api.go
++++ b/cli/commands/api.go
+@@ -120,6 +120,10 @@ func (o *APIOptions) authenticate() error {
+ 	}
+ 
+ 	if err != nil {
++		switch {
++		case errors.Is(err, ErrKeyringAccessFailed):
++			return fmt.Errorf("failed to access keyring: %w", err)
++		default:
+ 		return fmt.Errorf("failed to authenticate: %w", err)
++		}
+ 	}
+ 
+ 	return nil
