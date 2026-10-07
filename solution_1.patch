@@ -1,0 +1,27 @@
+diff --git a/cli/api/auth.go b/cli/api/auth.go
+index 8a9b0c1..43d5f6a 100644
+--- a/cli/api/auth.go
++++ b/cli/api/auth.go
+@@ -120,7 +120,7 @@ func (c *Cmd) fetchToken() (string, error) {
+         return "", errors.New("failed to retrieve token from keyring")
+     }
+ 
+-    if token == "" {
++    if token == "" || err != nil {
+         return "", ErrNotFound
+     }
+ 
+@@ -130,6 +130,12 @@ func (c *Cmd) fetchToken() (string, error) {
+     return token, nil
+ }
+ 
++func (c *Cmd) resolveCredential() (string, error) {
++    token, err := c.fetchToken()
++    if err != nil {
++        return "", err
++    }
++    return token, nil
++}
+ 
+ func (c *Cmd) sendRequest(req *http.Request) (*http.Response, error) {
+     token, err := c.resolveCredential()
