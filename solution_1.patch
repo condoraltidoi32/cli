@@ -1,0 +1,32 @@
+diff --git a/pkg/auth/auth.go b/pkg/auth/auth.go
+index 8f2d9b8..5e4c3a7 100644
+--- a/pkg/auth/auth.go
++++ b/pkg/auth/auth.go
+@@ -120,7 +120,12 @@ func (a *Auth) ResolveToken(host string) (string, error) {
+         return "", nil
+     }
+ 
+-    return "", nil
++    if err == nil {
++        return token, nil
++    }
++    if _, ok := err.(*keyring.ErrNotFound); ok {
++        return "", ErrNotFound
++    }
+ 
+     return "", err
+ }
+@@ -150,7 +155,12 @@ func (a *Auth) GetToken(host string) (string, error) {
+         return "", nil
+     }
+ 
+-    return "", nil
++    if err == nil {
++        return token, nil
++    }
++    if _, ok := err.(*keyring.ErrNotFound); ok {
++        return "", ErrNotFound
++    }
+ 
+     return "", err
+ }
