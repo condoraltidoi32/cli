@@ -1,0 +1,19 @@
+diff --git a/pkg/credentials/credentials.go b/pkg/credentials/credentials.go
+--- a/pkg/credentials/credentials.go
++++ b/pkg/credentials/credentials.go
+@@ -120,6 +120,14 @@ func (c *Credentials) GetToken(host string) (string, error) {
+         return "", ErrNotFound
+     }
+ 
++    if err != nil {
++        // Check if the error is due to an operational keyring failure
++        if _, ok := err.(keyringError); ok {
++            return "", fmt.Errorf("failed to retrieve authentication token: %w", err)
++        }
++    }
++
++    return token, nil
++
+     // If the token is found, return it
+     return token, nil
+ }
