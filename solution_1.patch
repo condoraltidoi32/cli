@@ -1,0 +1,22 @@
+diff --git a/pkg/auth/auth.go b/pkg/auth/auth.go
+--- a/pkg/auth/auth.go
++++ b/pkg/auth/auth.go
+@@ -120,12 +120,17 @@ func (a *Auth) GetToken(host string) (string, error) {
+         return "", nil
+     }
+ 
+-    // Proceed with unauthenticated request if no token is found.
+-    if token == "" {
+-        return "", nil
++    // Check for ErrNotFound and return appropriate error for keyring failure
++    if token == "" {
++        return "", fmt.Errorf("no authentication token found for host %s", host)
++    }
++
++    // Check for operational keyring failure
++    if err != nil && !errors.Is(err, ErrNotFound) {
++        return "", fmt.Errorf("failed to retrieve authentication token for host %s: %v", host, err)
+     }
+ 
+     return token, nil
+ }
