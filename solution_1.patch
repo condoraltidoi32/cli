@@ -1,0 +1,25 @@
+diff --git a/commands/api.go b/commands/api.go
+index 9876543..abcdef0 100644
+--- a/commands/api.go
++++ b/commands/api.go
+@@ -120,7 +120,12 @@ func (c *APICommand) Run() error {
+         token, err := c.tokenStore.GetToken(c.Opts.Host)
+         if err != nil {
+             if errors.Is(err, ErrNotFound) {
+-                c.Logger.Warn("No authentication token found for this host, proceeding unauthenticated")
++                c.Logger.Warn("No authentication token found for this host, proceeding unauthenticated. Please check your authentication configuration.")
++                c.Opts.Token = ""
++            } else {
++                c.Logger.Error("Failed to retrieve authentication token from keyring: %v", err)
++                return err
+             }
+             c.Opts.Token = token
+         }
+@@ -135,6 +140,7 @@ func (c *APICommand) Run() error {
+             c.Logger.Debug("Using token: %s", c.Opts.Token)
+             return nil
+         }
++        c.Logger.Warn("Token verification failed, proceeding unauthenticated. Please check your authentication configuration.")
+     }
+ 
+     return nil
