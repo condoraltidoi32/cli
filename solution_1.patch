@@ -1,0 +1,17 @@
+diff --git a/cmd/gh/api/api.go b/cmd/gh/api/api.go
+index 456789a..b7890ab 100644
+--- a/cmd/gh/api/api.go
++++ b/cmd/gh/api/api.go
+@@ -120,6 +120,12 @@ func (c *APICommand) Run(context context.Context, cmd *exec.Cmd) error {
+ 
+ 	// Fetch the token from the keyring
+ 	token, err := keyring.TokenForHost(authConfig.Host)
++	if err != nil {
++		if errors.Is(err, keyring.ErrNotFound) {
++			fmt.Fprintf(os.Stderr, "No authentication token found for %s\n", authConfig.Host)
++			return errors.New("no authentication token found")
++		}
++	}
+ 	if token == "" {
+ 		fmt.Fprintf(os.Stderr, "No authentication token found for %s\n", authConfig.Host)
+ 		return errors.New("no authentication token found")
