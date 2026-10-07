@@ -1,0 +1,16 @@
+diff --git a/cli/commands/api.go b/cli/commands/api.go
+index 3c4d5b6..e123456 100644
+--- a/cli/commands/api.go
++++ b/cli/commands/api.go
+@@ -245,6 +245,12 @@ func (c *APICommand) run() error {
+         return nil, nil
+     }
+ 
++    // Check if the error is due to an operational keyring failure
++    if err, ok := err.(*keyring.Error); ok && (err.Code == keyring.ErrorKeychainLocked || err.Code == keyring.ErrorDBusDisconnected || err.Code == keyring.ErrorAccessDenied) {
++        return nil, fmt.Errorf("failed to retrieve credentials: %w", err)
++    }
++
++    if err != nil {
+         return nil, err
+     }
