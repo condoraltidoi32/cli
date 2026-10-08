@@ -1,0 +1,17 @@
+diff --git a/cli/commands/api.go b/cli/commands/api.go
+--- a/cli/commands/api.go
++++ b/cli/commands/api.go
+@@ -40,7 +40,12 @@ func (cmd *ApiCommand) Run(context *cli.Context) error {
+         token, err := cmd.ResolveToken()
+         if err != nil {
+             return cmd.HandleError(err)
+-        }
++        } else if errors.Is(err, keyring.ErrNotFound) {
++            log.Printf("Token not found: %v", err)
++            return cmd.HandleError(&cli.ExitError{
++                ExitCode: 1,
++                Message:  "Token not found. Please authenticate again.",
++            })
+         }
+         req.Header.Set("Authorization", "token "+token)
+     }
