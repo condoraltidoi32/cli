@@ -1,0 +1,36 @@
+diff --git a/cli/credential.go b/cli/credential.go
+index 5a6b7c8..9012345 100644
+--- a/cli/credential.go
++++ b/cli/credential.go
+@@ -120,6 +120,14 @@ func (c *Credential) GetToken(host string) (string, error) {
+ 	return "", ErrNotFound
+ }
+ 
++func (c *Credential) GetTokenWithKeyring(host string) (string, error) {
++	token, err := c.GetKeyringToken(host)
++	if err != nil {
++		return "", fmt.Errorf("failed to retrieve token from keyring: %w", err)
++	}
++	return token, nil
++}
++
+ func (c *Credential) GetTokenForHost(host string) (string, error) {
+ 	token, err := c.GetToken(host)
+ 	if errors.Is(err, ErrNotFound) {
+@@ -137,7 +145,7 @@ func (c *Credential) GetTokenForHost(host string) (string, error) {
+ 	}
+ 
+ 	// Try to get token from the keyring
+-	token, err = c.GetToken(host)
++	token, err = c.GetTokenWithKeyring(host)
+ 	if err != nil {
+ 		return "", err
+ 	}
+@@ -153,6 +161,7 @@ func (c *Credential) GetTokenForHost(host string) (string, error) {
+ 
+ 	return "", fmt.Errorf("failed to retrieve token from any source: %w", err)
+ }
++
+ func (c *Credential) GetKeyringToken(host string) (string, error) {
+ 	// Implementation to retrieve token from keyring
+ 	// ...
