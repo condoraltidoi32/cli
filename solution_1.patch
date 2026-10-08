@@ -1,0 +1,16 @@
+diff --git a/pkg/credentials/credentials.go b/pkg/credentials/credentials.go
+index 1234567..89abcdef 100644
+--- a/pkg/credentials/credentials.go
++++ b/pkg/credentials/credentials.go
+@@ -100,6 +100,12 @@ func (c *Credentials) GetTokenForHost(host string) (string, error) {
+         return "", ErrNotFound
+     }
+ 
++    if err != nil {
++        // Log the error with a detailed message
++        logger.Errorf("Failed to retrieve token for host %s: %v", host, err)
++        return "", ErrKeyringAccessFailed
++    }
++
+     return token, nil
+ }
